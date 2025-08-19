@@ -1,0 +1,94 @@
+CREATE TABLE `users` (
+  `userid` varchar(30) NOT NULL,
+  `usernm` varchar(40) DEFAULT NULL,
+  `pswd` varchar(30) DEFAULT NULL,
+  `usertype` varchar(30) DEFAULT NULL,
+  `userstatus` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `userdetails` (
+  `userid` varchar(30) NOT NULL,
+  `usernm` varchar(40) DEFAULT NULL,
+  `usertype` varchar(30) DEFAULT NULL,
+  `addr` varchar(200) DEFAULT NULL,
+  `pincode` varchar(30) DEFAULT NULL,
+  `mobileno` varchar(10) DEFAULT NULL,
+  `emailid` varchar(30) DEFAULT NULL,
+  `dob` varchar(30) DEFAULT NULL,
+  `gender` varchar(30) DEFAULT NULL,
+  `userstatus` varchar(30) DEFAULT NULL,
+  `photo` varchar(200) DEFAULT NULL,
+  `city` varchar(200) DEFAULT NULL,
+  `state` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `loginlog` (
+  `logid` int NOT NULL,
+  `logindt` varchar(100) DEFAULT NULL,
+  `loginmonth` int DEFAULT NULL,
+  `loginyear` int DEFAULT NULL,
+  `userid` varchar(80) DEFAULT NULL,
+  `logintype` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`logid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `labels` (
+  `srNo` int NOT NULL,
+  `title` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`srNo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `emotions` (
+  `eid` int NOT NULL,
+  `emotiontxt` longblob,
+  `userid` varchar(200) DEFAULT NULL,
+  `dt` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`eid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+DELIMITER $$
+CREATE   PROCEDURE `changePassword`(in userid1 varchar(200),in pass1 varchar(200))
+BEGIN
+update users set pswd=pass1 where userid=userid1;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE   PROCEDURE `chkPass`(in userid1 varchar(200),in pass1 varchar(200))
+BEGIN
+select * from users where userid=userid1 and pswd=pass1;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE   PROCEDURE `insertEmotions`(in userid1 varchar(200),in emotiontxt1 longblob)
+begin
+declare mxid integer;
+set mxid=(select ifnull(max(eid),1000) from emotions);
+set mxid=mxid+1;
+insert into emotions values(mxid,emotiontxt1,userid1,now()); 
+end$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE  PROCEDURE `insertUser`(in userid1 varchar(200),in pass1 varchar(200), in userName1 varchar(200), in mob varchar(30), in emailId varchar(200)
+,in gender1 varchar(200),in addr1 varchar(200),in dob1 varchar(200))
+begin
+declare mxid integer;
+set mxid=(select ifnull(max(id),1000) from userdetails);
+set mxid=mxid+1;
+insert into userdetails values(mxid,userName1,userid1,mob,emailId,gender1,dob1,addr1,'NA','NA');
+insert into users values(userid1,userName1,pass1,'active','user',emailId); 
+end$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE  PROCEDURE `userlogin`(in userid1 varchar(200),in pass1 varchar(200))
+begin
+select * from users where userid=userid1 and pass=pass1 and loginsts='active';
+end$$
+DELIMITER ;
